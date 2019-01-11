@@ -46837,9 +46837,12 @@ window.onload = function () {
         return team ? 'red' : ansi_colors__WEBPACK_IMPORTED_MODULE_0__["blue"];
       },
       draw: function draw(x, y) {
+        var gridX = Math.floor(x / 20) * 20,
+            gridY = Math.floor(y / 20) * 20,
+            localXY = -20 + x % 20 + y % 20;
         clear();
         ctx.fillStyle = this.color(1);
-        ctx.fillRect(Math.floor(x / 20) * 20, Math.floor(y / 20) * 20, this.w, this.h);
+        ctx.fillRect(gridX, gridY, this.w, this.h);
       }
     },
         clear = function clear() {
