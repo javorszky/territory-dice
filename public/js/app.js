@@ -86,6 +86,191 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/ansi-colors/index.js":
+/*!*******************************************!*\
+  !*** ./node_modules/ansi-colors/index.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const colors = { enabled: true, visible: true, styles: {}, keys: {} };
+
+if ('FORCE_COLOR' in Object({"MIX_PUSHER_APP_KEY":"lamf888dsflkllsmfd","MIX_PUSHER_APP_CLUSTER":"","NODE_ENV":"development"})) {
+  colors.enabled = Object({"MIX_PUSHER_APP_KEY":"lamf888dsflkllsmfd","MIX_PUSHER_APP_CLUSTER":"","NODE_ENV":"development"}).FORCE_COLOR !== '0';
+}
+
+const ansi = style => {
+  style.open = `\u001b[${style.codes[0]}m`;
+  style.close = `\u001b[${style.codes[1]}m`;
+  style.regex = new RegExp(`\\u001b\\[${style.codes[1]}m`, 'g');
+  return style;
+};
+
+const wrap = (style, str, nl) => {
+  let { open, close, regex } = style;
+  str = open + (str.includes(close) ? str.replace(regex, close + open) : str) + close;
+  // see https://github.com/chalk/chalk/pull/92, thanks to the
+  // chalk contributors for this fix. However, we've confirmed that
+  // this issue is also present in Windows terminals
+  return nl ? str.replace(/\r?\n/g, `${close}$&${open}`) : str;
+};
+
+const style = (input, stack) => {
+  if (input === '' || input == null) return '';
+  if (colors.enabled === false) return input;
+  if (colors.visible === false) return '';
+  let str = '' + input;
+  let nl = str.includes('\n');
+  let n = stack.length;
+  while (n-- > 0) str = wrap(colors.styles[stack[n]], str, nl);
+  return str;
+};
+
+const define = (name, codes, type) => {
+  colors.styles[name] = ansi({ name, codes });
+  let t = colors.keys[type] || (colors.keys[type] = []);
+  t.push(name);
+
+  Reflect.defineProperty(colors, name, {
+    get() {
+      let color = input => style(input, color.stack);
+      Reflect.setPrototypeOf(color, colors);
+      color.stack = this.stack ? this.stack.concat(name) : [name];
+      return color;
+    }
+  });
+};
+
+define('reset', [0, 0], 'modifier');
+define('bold', [1, 22], 'modifier');
+define('dim', [2, 22], 'modifier');
+define('italic', [3, 23], 'modifier');
+define('underline', [4, 24], 'modifier');
+define('inverse', [7, 27], 'modifier');
+define('hidden', [8, 28], 'modifier');
+define('strikethrough', [9, 29], 'modifier');
+
+define('black', [30, 39], 'color');
+define('red', [31, 39], 'color');
+define('green', [32, 39], 'color');
+define('yellow', [33, 39], 'color');
+define('blue', [34, 39], 'color');
+define('magenta', [35, 39], 'color');
+define('cyan', [36, 39], 'color');
+define('white', [37, 39], 'color');
+define('gray', [90, 39], 'color');
+define('grey', [90, 39], 'color');
+
+define('bgBlack', [40, 49], 'bg');
+define('bgRed', [41, 49], 'bg');
+define('bgGreen', [42, 49], 'bg');
+define('bgYellow', [43, 49], 'bg');
+define('bgBlue', [44, 49], 'bg');
+define('bgMagenta', [45, 49], 'bg');
+define('bgCyan', [46, 49], 'bg');
+define('bgWhite', [47, 49], 'bg');
+
+define('blackBright', [90, 39], 'bright');
+define('redBright', [91, 39], 'bright');
+define('greenBright', [92, 39], 'bright');
+define('yellowBright', [93, 39], 'bright');
+define('blueBright', [94, 39], 'bright');
+define('magentaBright', [95, 39], 'bright');
+define('cyanBright', [96, 39], 'bright');
+define('whiteBright', [97, 39], 'bright');
+
+define('bgBlackBright', [100, 49], 'bgBright');
+define('bgRedBright', [101, 49], 'bgBright');
+define('bgGreenBright', [102, 49], 'bgBright');
+define('bgYellowBright', [103, 49], 'bgBright');
+define('bgBlueBright', [104, 49], 'bgBright');
+define('bgMagentaBright', [105, 49], 'bgBright');
+define('bgCyanBright', [106, 49], 'bgBright');
+define('bgWhiteBright', [107, 49], 'bgBright');
+
+/* eslint-disable no-control-regex */
+const re = colors.ansiRegex = /\u001b\[\d+m/gm;
+colors.hasColor = colors.hasAnsi = str => {
+  re.lastIndex = 0;
+  return !!str && typeof str === 'string' && re.test(str);
+};
+
+colors.unstyle = str => {
+  re.lastIndex = 0;
+  return typeof str === 'string' ? str.replace(re, '') : str;
+};
+
+colors.none = colors.clear = colors.noop = str => str; // no-op, for programmatic usage
+colors.stripColor = colors.unstyle;
+colors.symbols = __webpack_require__(/*! ./symbols */ "./node_modules/ansi-colors/symbols.js");
+colors.define = define;
+module.exports = colors;
+
+
+/***/ }),
+
+/***/ "./node_modules/ansi-colors/symbols.js":
+/*!*********************************************!*\
+  !*** ./node_modules/ansi-colors/symbols.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+const isWindows = process.platform === 'win32';
+const isLinux = process.platform === 'linux';
+
+const windows = {
+  bullet: '•',
+  check: '√',
+  cross: '×',
+  ellipsis: '...',
+  heart: '❤',
+  info: 'i',
+  line: '─',
+  middot: '·',
+  minus: '－',
+  plus: '＋',
+  question: '?',
+  questionSmall: '﹖',
+  pointer: '>',
+  pointerSmall: '»',
+  warning: '‼'
+};
+
+const other = {
+  ballotCross: '✘',
+  bullet: '•',
+  check: '✔',
+  cross: '✖',
+  ellipsis: '…',
+  heart: '❤',
+  info: 'ℹ',
+  line: '─',
+  middot: '·',
+  minus: '－',
+  plus: '＋',
+  question: '?',
+  questionFull: '？',
+  questionSmall: '﹖',
+  pointer: isLinux ? '▸' : '❯',
+  pointerSmall: isLinux ? '‣' : '›',
+  warning: '⚠'
+};
+
+module.exports = isWindows ? windows : other;
+Reflect.defineProperty(module.exports, 'windows', { enumerable: false, value: windows });
+Reflect.defineProperty(module.exports, 'other', { enumerable: false, value: other });
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
 /***/ "./node_modules/axios/index.js":
 /*!*************************************!*\
   !*** ./node_modules/axios/index.js ***!
@@ -46616,8 +46801,14 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
 /*!**********************************!*\
   !*** ./resources/js/notebook.js ***!
   \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var ansi_colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ansi-colors */ "./node_modules/ansi-colors/index.js");
+/* harmony import */ var ansi_colors__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(ansi_colors__WEBPACK_IMPORTED_MODULE_0__);
+
 
 window.onload = function () {
   var canvas = document.getElementById('notebook');
@@ -46631,31 +46822,49 @@ window.onload = function () {
       w: 4,
       h: 4,
       color: 'red',
-      draw: function draw() {
+      reDraw: function reDraw() {
+        clear();
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x - 2, this.y - 2, this.w, this.h);
       }
     },
-        raf,
-        main = function main() {
-      point.draw();
-      raf = window.requestAnimationFrame(main);
-    };
-
-    ctx.fillStyle = 'rgb(200, 0, 0)';
-
-    for (var index = 0; index <= canvas.clientWidth / 20; index++) {
-      for (var hindex = 0; hindex <= canvas.clientHeight / 20; hindex++) {
-        ctx.fillRect(index * 20 - 1, hindex * 20 - 1, 2, 2);
+        grid = {
+      w: 20,
+      h: 20,
+      x: 0,
+      y: 0,
+      color: function color(team) {
+        return team ? 'red' : ansi_colors__WEBPACK_IMPORTED_MODULE_0__["blue"];
+      },
+      draw: function draw(x, y) {
+        clear();
+        ctx.fillStyle = this.color(1);
+        ctx.fillRect(Math.floor(x / 20) * 20, Math.floor(y / 20) * 20, this.w, this.h);
       }
-    }
+    },
+        clear = function clear() {
+      ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgb(200, 0, 0)';
+
+      for (var index = 0; index <= canvas.clientWidth / 20; index++) {
+        for (var hindex = 0; hindex <= canvas.clientHeight / 20; hindex++) {
+          ctx.fillRect(index * 20 - 1, hindex * 20 - 1, 2, 2);
+        }
+      }
+    }; // raf;
+    // main = function () {
+    // 	raf = window.requestAnimationFrame(main);
+    // };
+
 
     canvas.addEventListener('mousemove', function (e) {
-      console.log(e);
-      point.x = e.offsetX;
-      point.y = e.offsetY; // point.draw();
+      grid.draw(e.offsetX, e.offsetY); // point.x = e.offsetX;
+      // point.y = e.offsetY;
+      // point.reDraw();
     });
-    window.requestAnimationFrame(main); // console.log(ctx, canvas.clientWidth, canvas.clientHeight);
+    clear(); // window.requestAnimationFrame(main);
+    // console.log(ctx, canvas.clientWidth, canvas.clientHeight);
     // ctx.fillRect(10, 10, 50, 50);
     // ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
     // ctx.fillRect(30, 30, 50, 50);
